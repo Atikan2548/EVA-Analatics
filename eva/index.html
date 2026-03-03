@@ -1,0 +1,142 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container">
+  <header>
+    <h1>Economic Value Added (EVA) Analysis</h1>
+    <p>เครื่องมือวิเคราะห์มูลค่าเพิ่มทางเศรษฐศาสตร์</p>
+  </header>
+
+  <div class="main-grid">
+    <div class="input-sidebar">
+      <section class="card">
+        <h3>1. ข้อมูลสำหรับคำนวณ NOPAT</h3>
+        <p class="subtitle">Net Operating Profit After Tax</p>
+        <div class="input-row">
+          <div class="input-group">
+            <label>EBIT (กำไรก่อนดอกเบี้ยและภาษี)</label>
+            <input type="number" id="ebit" value="72" oninput="calculateAll()">
+          </div>
+          <div class="input-group">
+            <label>อัตราภาษี (%)</label>
+            <input type="number" id="taxRate" value="20" oninput="calculateAll()">
+          </div>
+        </div>
+        <div class="inner-result">NOPAT = <span id="res_nopat">0</span> บาท</div>
+      </section>
+
+      <section class="card">
+        <h3>2. ข้อมูลสำหรับคำนวณเงินทุนที่ลงทุน</h3>
+        <p class="subtitle">Invested Capital</p>
+        <div class="input-row">
+          <div class="input-group">
+            <label>สินทรัพย์รวม</label>
+            <input type="number" id="totalAssets" value="5000000" oninput="calculateAll()">
+          </div>
+          <div class="input-group">
+            <label>หนี้สินหมุนเวียน</label>
+            <input type="number" id="currentLiab" value="500000" oninput="calculateAll()">
+          </div>
+          <div class="input-group">
+            <label>หนี้สินไม่มีดอกเบี้ย</label>
+            <input type="number" id="nonInterestLiab" value="0" oninput="calculateAll()">
+          </div>
+        </div>
+        <div class="inner-result">Invested Capital = <span id="res_ic">0</span> บาท</div>
+      </section>
+
+      <section class="card">
+        <h3>3. ข้อมูลสำหรับคำนวณ WACC</h3>
+        <p class="subtitle">Weighted Average Cost of Capital</p>
+        <div class="input-row">
+          <div class="input-group">
+            <label>มูลค่าส่วนผู้ถือหุ้น (E)</label>
+            <input type="number" id="equityValue" value="3000000" oninput="calculateAll()">
+          </div>
+          <div class="input-group">
+            <label>มูลค่าหนี้สิน (D)</label>
+            <input type="number" id="debtValue" value="2000000" oninput="calculateAll()">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>ต้นทุนส่วนผู้ถือหุ้น (%)</label>
+            <input type="number" id="costEquity" value="12" oninput="calculateAll()">
+          </div>
+          <div class="input-group">
+            <label>ต้นทุนของหนี้สิน (%)</label>
+            <input type="number" id="costDebt" value="6" oninput="calculateAll()">
+          </div>
+        </div>
+        <div class="inner-result">WACC = <span id="res_wacc">0</span>%</div>
+      </section>
+    </div>
+
+    <div class="dashboard-content">
+      <div class="summary-card main-eva">
+        <p>มูลค่าเพิ่มทางเศรษฐศาสตร์ (EVA)</p>
+        <div id="big_eva" class="huge-value">+0.00</div>
+        <span>บาท</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <label>NOPAT</label>
+          <div id="stat_nopat">0.00</div>
+        </div>
+        <div class="stat-box">
+          <label>Capital Charge</label>
+          <div id="stat_charge">0.00</div>
+        </div>
+        <div class="stat-box">
+          <label>Invested Capital</label>
+          <div id="stat_ic">0.00</div>
+        </div>
+        <div class="stat-box">
+          <label>WACC</label>
+          <div id="stat_wacc">0.00%</div>
+        </div>
+        <div class="stat-box purple">
+          <label>ROIC</label>
+          <div id="stat_roic">0.00%</div>
+        </div>
+        <div class="stat-box orange">
+          <label>Spread (ROIC - WACC)</label>
+          <div id="stat_spread">0.00%</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-box">
+          <h4>การแยกส่วนประกอบ EVA</h4>
+          <canvas id="chartComponents"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>โครงสร้างเงินทุน</h4>
+          <canvas id="chartStructure"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>เปรียบเทียบ ROIC กับ WACC</h4>
+          <canvas id="chartComparison"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>แนวโน้ม EVA (จำลองรายไตรมาส)</h4>
+          <canvas id="chartTrend"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="card interpretation">
+    <h3>การตีความผลลัพธ์:</h3>
+    <ul id="interpretation_list"></ul>
+    <div class="status-badges">
+      <div id="status_creation" class="badge">สถานะ: -</div>
+      <div id="status_efficiency" class="badge">ประสิทธิภาพ: -</div>
+      <div id="status_return" class="badge">ระดับผลตอบแทน: -</div>
+    </div>
+    <div class="strategy-box">
+      <strong>ข้อเสนอแนะเชิงกลยุทธ์:</strong>
+      <ul id="strategy_list"></ul>
+    </div>
+  </section>
+</div>
